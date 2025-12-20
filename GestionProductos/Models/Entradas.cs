@@ -13,6 +13,5 @@ public class Entradas
     [Required(ErrorMessage = "El concepto es obligatorio")]
     public string Concepto { get; set; } = null!;
     public double Total { get; set; }
-
     public ICollection<EntradasDetalles> EntradaDetalle { get; set; } = new List<EntradasDetalles>();       
 }
