@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace GestionProductos.Data
-{
-    // Add profile data for application users by adding properties to the ApplicationUser class
-    public class ApplicationUser : IdentityUser
-    {
-    }
+namespace GestionProductos.Data;
 
+// Add profile data for application users by adding properties to the ApplicationUser class
+public class ApplicationUser : IdentityUser
+{
 }
