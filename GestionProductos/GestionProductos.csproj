@@ -16,7 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <Folder Include="Components\Pages\EntradasPages\" />
+    <Folder Include="Components\Pages\ProductosPages\" />
   </ItemGroup>
 
 </Project>
