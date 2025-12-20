@@ -1,5 +1,8 @@
-﻿namespace GestionProductos.Services;
+﻿using GestionProductos.Data;
+using Microsoft.EntityFrameworkCore;
 
-public class EntradasService
+namespace GestionProductos.Services;
+
+public class EntradasService(IDbContextFactory<ApplicationDbContext> DbFactory)
 {
 }
