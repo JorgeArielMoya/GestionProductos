@@ -1,6 +1,7 @@
 using GestionProductos.Components;
 using GestionProductos.Components.Account;
 using GestionProductos.Data;
+using GestionProductos.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 //Inyeccion de los services
+builder.Services.AddScoped<EntradasService>();
+builder.Services.AddScoped<ProductosService>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
