@@ -2,6 +2,126 @@
 @inject ProductosService productosService
 @rendermode InteractiveServer
 
-@code {
+<PageTitle> Index Productos </PageTitle>
 
+<div class="container mt-3">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h5 class="card-title text-center"> <strong> Consulta Productos </strong></h5>
+
+            <div class="d-flex justify-content-end">
+                <a class="btn btn-primary bi bi-plus-square" href="/Productos/Create"> Crear producto </a>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-12 col-md-3 mb-3">
+                    <label class="col-form-label"> <strong> Filtrar por </strong></label>
+                    <InputSelect class="form-select" @bind-Value="Filtro"> 
+                        <option value = "" disabled selected> Seleccione una opcion </option>
+                        <option value="ProductoId"> Producto Id </option>
+                        <option value="Descripcion"> Descripcion </option>
+                        <option value="Costo"> Costo </option>
+                        <option value="Precio"> Precio </option>
+                        <option value="Existencia"> Existencia </option>
+                    </InputSelect>
+                </div>
+
+                <div class="col-12 col-md-3 mb-3">
+                    <label class="col-form-label"> <strong> Busqueda </strong></label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" @bind="ValorFiltro"/>
+                        <button type="button" class="btn btn-outline-info bi bi-search" @onclick="Buscar"> </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover text-center">
+                    <thead class="table table-striped"> 
+                        <tr> 
+                            <th> Producto Id </th>
+                            <th> Descripcion </th>
+                            <th> Costo </th>
+                            <th> Precio </th>
+                            <th> Existencia </th>
+                            <th> Opciones </th>
+                        </tr>
+                    </thead>
+
+                    @if(ListaProductos.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center"> No se han encontrado productos </td>
+                        </tr>
+                    }
+
+                    @foreach(var producto in ListaProductos)
+                    {
+                        <tr> 
+                            <td> @producto.ProductoId</td>
+                            <td> @producto.Descripcion</td>
+                            <td> @producto.Costo.ToString("F2")</td>
+                            <td> @producto.Precio.ToString("F2")</td>
+                            <td> @producto.Existencia.ToString("F2")</td>
+                            <td> <a class="btn btn-sm btn-outline-info bi bi-pencil" href="/Productos/Edit/@producto.ProductoId"/> </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+        <div class="card-footer">
+            <label class="col-form-label"> <strong> Total existencias: </strong> @ListaProductos.Sum(p=> p.Existencia).ToString("F2")</label>
+            <label class="col-form-label"> <strong> Total costos: </strong> @ListaProductos.Sum(p => p.Costo).ToString("F2") </label>
+        </div>
+    </div>
+</div>
+
+@code {
+    public string Filtro { get; set; } = string.Empty;
+
+    public string ValorFiltro { get; set; } = string.Empty;
+
+    public List<Productos> ListaProductos = new List<Productos>();
+
+    protected override async Task OnInitializedAsync ()
+    {
+        await Buscar();
+    }
+
+    public async Task Buscar ()
+    {
+        var lista = await productosService.Listar(e => true);
+
+        if (!string.IsNullOrEmpty(ValorFiltro))
+        {
+            if (Filtro == nameof(Productos.ProductoId) && int.TryParse(ValorFiltro, out int id))
+            {
+                lista = lista.Where(p => p.ProductoId == id).ToList();
+            }
+
+            else if (Filtro == nameof(Productos.Costo) && double.TryParse(ValorFiltro, out double costo))
+            {
+                lista = lista.Where(p => p.Costo == costo).ToList();
+            }
+
+            else if (Filtro == nameof(Productos.Precio) && double.TryParse(ValorFiltro, out double precio))
+            {
+                lista = lista.Where(p => p.Precio == precio).ToList();
+            }
+
+            else if (Filtro == nameof(Productos.Existencia) && double.TryParse(ValorFiltro, out double existencia))
+            {
+                lista = lista.Where(p => p.Existencia == existencia).ToList();
+            }
+
+            else if (Filtro == nameof(Productos.Descripcion))
+            {
+                lista = lista.Where(p => p.Descripcion.Contains(ValorFiltro, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+        }
+
+        ListaProductos = lista;
+    }
 }
