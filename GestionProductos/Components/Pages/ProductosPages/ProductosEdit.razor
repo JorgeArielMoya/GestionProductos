@@ -1,5 +1,10 @@
-﻿<h3>ProductosEdit</h3>
+﻿@page "/Productos/Edit/{ProductoId:int}"
+@inject ProductosService productosService
+@inject NavigationManager navigation
+@rendermode InteractiveServer
 
 @code {
+    [Parameter]
+    public int ProductoId { get; set; }
 
 }
