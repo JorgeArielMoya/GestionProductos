@@ -1,5 +1,11 @@
-﻿<h3>EntradasEdit</h3>
+﻿@page "/Entradas/Edit/{EntradaId:int}"
+@inject ProductosService productosService
+@inject EntradasService entradasService
+@inject NavigationManager navigation
+@rendermode InteractiveServer
 
 @code {
+    [Parameter]
+    public int EntradaId { get; set; }
 
 }
