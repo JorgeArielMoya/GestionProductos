@@ -85,11 +85,27 @@
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         Input ??= new();
-
         editContext = new EditContext(Input);
+
+        // Verificar si el usuario ya está autenticado
+        if (AuthenticationState is not null)
+        {
+            var authState = await AuthenticationState;
+            var user = authState.User;
+
+            if (user.Identity?.IsAuthenticated == true)
+            {
+                // Redirigir directamente a Entradas/Index si ya está autenticado
+                NavigationManager.NavigateTo("/Entradas/Index", true);
+                return;
+            }
+        }
 
         if (HttpMethods.IsGet(HttpContext.Request.Method))
         {
