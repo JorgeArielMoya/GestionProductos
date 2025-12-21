@@ -33,7 +33,7 @@ public class EntradasService(IDbContextFactory<ApplicationDbContext> DbFactory)
         return await contexto.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> Modificar(Entradas entrada)
+    private async Task<bool> Modificar(Entradas entrada)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
 
