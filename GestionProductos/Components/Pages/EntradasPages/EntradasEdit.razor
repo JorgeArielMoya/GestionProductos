@@ -105,7 +105,7 @@
                     <label class="col-12"> <strong> Fecha: </strong> @Entrada.Fecha.ToShortDateString()</label>
                     <label class="col-12"> <strong> Concepto: </strong> @Entrada.Concepto</label>
                     <label class="col-12"> <strong> Total: </strong> @Entrada.EntradaDetalle.Sum(e => e.Costo * e.Cantidad).ToString("F2")</label>
-                    <label class="text-danger"> Esta seguro que desea eliminar este producto? </label>
+                    <label class="text-danger"> Esta seguro que desea eliminar esta entrada? </label>
                 </div>
 
                 <div class="modal-footer d-flex justify-content-center gap-2">
