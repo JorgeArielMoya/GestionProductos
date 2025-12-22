@@ -5,6 +5,70 @@
 
 <PageTitle> Create Productos </PageTitle>
 
-@code {
+<div class="container mt-3">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h5 class="card-title text-center"> <strong> Crear Producto </strong></h5>
+        </div>
 
+        <EditForm Model="Producto" OnValidSubmit="GuardarProducto"> 
+            <DataAnnotationsValidator />
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        <label class="col-form-label"> <strong> Producto Id </strong> </label>
+                        <InputNumber class="form-control" @bind-Value="Producto.ProductoId" disabled/>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        <label class="col-form-label"> <strong> Descripcion </strong> </label>
+                        <InputText class="form-control" @bind-Value="Producto.Descripcion" />
+                        <ValidationMessage For="() => Producto.Descripcion"/>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        <label class="col-form-label"> <strong> Costo </strong> </label>
+                        <InputNumber class="form-control" @bind-Value="Producto.Costo" />
+                        <ValidationMessage For="() => Producto.Costo" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        <label class="col-form-label"> <strong> Precio </strong> </label>
+                        <InputNumber class="form-control" @bind-Value="Producto.Precio" />
+                        <ValidationMessage For="() => Producto.Precio" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        <label class="col-form-label"> <strong> Existencia </strong> </label>
+                        <InputNumber class="form-control" @bind-Value="Producto.Existencia" readonly />                       
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar </button>
+                <a class="btn btn-secondary bi bi-arrow-left" href="/Productos/Index"> Regresar </a>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    public Productos Producto = new Productos();
+
+    public async Task GuardarProducto ()
+    {
+        if (await productosService.Guardar(Producto))
+        {
+            navigation.NavigateTo("/Productos/Index");
+        }
+    }
 }
