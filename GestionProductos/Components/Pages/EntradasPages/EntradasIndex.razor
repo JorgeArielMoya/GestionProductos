@@ -7,10 +7,128 @@
 
 <div class="container mt-3">
     <div class="card shadow-lg">
+        <div class="card-header">
+            <h5 class="card-title text-center"> <strong> Consulta entradas </strong></h5>
 
+            <div class="d-flex justify-content-center">
+                <a class="btn btn-primary bi-plus-square" href="/Entradas/Create"> Crear entrada </a>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-md-3">
+                    <label class="col-form-label"> <strong> Desde </strong></label>
+                    <InputDate class="form-control" @bind-Value="Desde"/>
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <label class="col-form-label"> <strong> Hasta </strong></label>
+                    <InputDate class="form-control" @bind-Value="Hasta" />
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <label class="col-form-label"> <strong> Filtrar por </strong></label>
+                    <InputSelect class="form-select" @bind-Value="Filtro"> 
+                        <option value ="" disabled selected> Seleccione una opcion </option>
+                        <option value="EntradaId"> Entrada Id </option>
+                        <option value="Concepto"> Concepto</option>
+                        <option value="Total"> Total </option>
+                    </InputSelect>
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <label class="col-form-label"> <strong> Busqueda </strong></label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-info bi bi-search" @onclick="Buscar"> </button>
+                    </div>
+                </div>
+            </div>
+
+             <div class="table-responsive">
+                <table class="table table-hover text-center">
+                    <thead class="table table-striped"> 
+                        <tr>
+                            <th> Entrada Id </th>
+                            <th> Fecha </th>
+                            <th> Concepto </th>
+                            <th> Total </th>
+                            <th> Opciones </th>
+                        </tr>
+                    </thead>
+
+                    @if(ListaEntradas.Count == 0)
+                    {
+                        <tr> 
+                            <td colspan="5" class="text-center"> No se han encontrado entradas </td>
+                        </tr>
+                    }
+
+                    @foreach(var entrada in ListaEntradas)
+                    {
+                        <tr>
+                            <td> @entrada.EntradaId</td>
+                            <td> @entrada.Fecha.ToShortDateString()</td>
+                            <td> @entrada.Concepto</td>
+                            <td> @entrada.EntradaDetalle.Sum(e=> e.Costo * e.Cantidad).ToString("F2")</td>
+                            <td> <a class="btn btn-sm btn-outline-info bi bi-pencil" href="/Entradas/Edit/@entrada.EntradaId" /></td>
+                        </tr>
+                    }
+                </table>
+             </div>
+        </div>
+
+        <div class="card-footer">
+            <label class="col-form-label"> <strong> Conteo entradas: </strong> @ListaEntradas.Count()  </label>
+            <label class="col-form-label"> <strong> Total obtenido: </strong> @ListaEntradas.Sum(e => e.EntradaDetalle.Sum(d => d.Costo * d.Cantidad)).ToString("F2") </label>
+        </div>
     </div>
 </div>
 
 @code {
+    public DateTime? Desde { get; set; }
 
+    public DateTime? Hasta { get; set; }
+
+    public string Filtro { get; set; } = string.Empty;
+
+    public string ValorFiltro { get; set; } = string.Empty;
+
+    public List<Entradas> ListaEntradas { get; set; } = new List<Entradas>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Buscar();
+    }
+
+    public async Task Buscar ()
+    {
+        var lista = await entradasService.Listar(e => true);
+
+        if (Desde.HasValue && Hasta.HasValue)
+        {
+            lista = lista.Where(e => e.Fecha >= Desde && e.Fecha <= Hasta).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(ValorFiltro))
+        {
+            if (Filtro == nameof(Entradas.EntradaId) && int.TryParse(ValorFiltro, out int id))
+            {
+                lista = lista.Where(e => e.EntradaId == id).ToList();
+            }
+
+            else if (Filtro == nameof(Entradas.Concepto))
+            {
+                lista = lista.Where(e => e.Concepto.Contains(ValorFiltro, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            else if (Filtro == nameof(Entradas.Total) && double.TryParse(ValorFiltro, out double total))
+            {
+                lista = lista.Where(e => e.EntradaDetalle.Sum(e => e.Cantidad * e.Costo) == total).ToList();
+            }
+        }
+
+        ListaEntradas = lista;
+    }
 }
