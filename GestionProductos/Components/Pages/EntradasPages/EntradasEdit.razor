@@ -84,12 +84,38 @@
 
             <div class="card-footer d-flex justify-content-center gap-2">
                 <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar </button>
-                <button type="button" class="btn btn-danger bi bi-trash" @onclick="() => MostrarModal = false"> Eliminar </button>
+                <button type="button" class="btn btn-danger bi bi-trash" @onclick="() => MostrarModal = true"> Eliminar </button>
                 <a class="btn btn-secondary bi bi-arrow-left" href="/Entradas/Index"> Regresar </a>
             </div>
         </EditForm>
     </div>
 </div>
+
+@if(MostrarModal)
+{
+    <div class="modal d-block" role="dialog" tabindex="-1" style="background: rgba(0,0,0,0.5)">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title mx-auto"> Eliminar entrada </h5>
+                </div>
+
+                <div class="modal-body">
+                    <label class="col-12"> <strong> Entrada Id: </strong> @Entrada.EntradaId</label>
+                    <label class="col-12"> <strong> Fecha: </strong> @Entrada.Fecha.ToShortDateString()</label>
+                    <label class="col-12"> <strong> Concepto: </strong> @Entrada.Concepto</label>
+                    <label class="col-12"> <strong> Total: </strong> @Entrada.EntradaDetalle.Sum(e => e.Costo * e.Cantidad).ToString("F2")</label>
+                    <label class="text-danger"> Esta seguro que desea eliminar este producto? </label>
+                </div>
+
+                <div class="modal-footer d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-danger bi bi-trash" @onclick="EliminarEntrada"> Si, deseo eliminar </button>
+                    <button type="button" class="btn btn-secondary bi bi-arrow-left" @onclick="() => MostrarModal = false"> Regresar </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     [Parameter]
