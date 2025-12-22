@@ -97,6 +97,11 @@
 
     private bool MostrarModal { get; set; } = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        Producto = await productosService.Buscar(ProductoId);
+    }
+
     public async Task GuardarProducto()
     {
         if (await productosService.Guardar(Producto))
