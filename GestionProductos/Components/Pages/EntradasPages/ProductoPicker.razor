@@ -2,7 +2,7 @@
     <div class="col-12 col-md-4 mb-3">
         <label class="col-form-label"> <strong> Seleccione un producto </strong></label>
         <InputSelect class="form-select" @bind-value="ProductoId" @bind-value:after="OnProductoChanged">
-            <option value ="0"> Seleccione producto </option>
+            <option value ="0" disabled selected> Seleccione producto </option>
 
             @foreach(var producto in ListaProductos)
             {
