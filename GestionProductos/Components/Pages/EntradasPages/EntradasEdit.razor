@@ -6,8 +6,143 @@
 
 <PageTitle> Edit Entradas </PageTitle>
 
+<div class="container mt-3">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h5 class="card-title text-center"> Editar entrada</h5>
+        </div>
+
+        <EditForm Model="Entrada" OnValidSubmit="GuardarEntrada">
+            <DataAnnotationsValidator />
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        <label class="col-form-label"> <strong> Entrada Id </strong></label>
+                        <InputNumber class="form-control" @bind-Value="Entrada.EntradaId" disabled />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        <label class="col-form-label"> <strong> Fecha </strong></label>
+                        <InputDate class="form-control" @bind-Value="Entrada.Fecha" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        <label class="col-form-label"> <strong> Concepto </strong></label>
+                        <InputText class="form-control" @bind-Value="Entrada.Concepto" />
+                        <ValidationMessage For="() => Entrada.Concepto" />
+                    </div>
+                </div>
+
+                <div class="border border-success p-3 mt-3">
+                    <h5> Detalle del pedido </h5>
+
+                    <ProductoPicker ProductoId="DetalleSeleccionado.ProductoId"
+                                    Cantidad="DetalleSeleccionado.Cantidad"
+                                    Costo="DetalleSeleccionado.Costo"
+                                    ListaProductos="ListaProductos"
+                                    OnComponenteSeleccionado="AgregarDetalle" />
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered table-light text-center">
+                            <thead>
+                                <tr>
+                                    <th> Producto Id </th>
+                                    <th> Descripcion </th>
+                                    <th> Cantidad </th>
+                                    <th> Costo </th>
+                                    <th> Importe </th>
+                                    <th> Opciones </th>
+                                </tr>
+                            </thead>
+
+                            @foreach (var detalle in Entrada.EntradaDetalle)
+                            {
+                                <tr>
+                                    <td> @detalle.ProductoId </td>
+                                    <td> @ListaProductos.FirstOrDefault(d => d.ProductoId == detalle.ProductoId)?.Descripcion </td>
+                                    <td> @detalle.Cantidad.ToString("F2")</td>
+                                    <td> @detalle.Costo.ToString("F2")</td>
+                                    <td> @((detalle.Cantidad * detalle.Costo).ToString("F2"))</td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-dark bi bi-trash" @onclick="() => RemoverDetalle(detalle)">
+                                            Remover
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+
+                    <label class="form-label"> <strong> Conteo detalles: </strong> @Entrada.EntradaDetalle.Count()</label>
+                    <label class="form-label"> <strong> Total obtenido: </strong> @Entrada.EntradaDetalle.Sum(e => e.Costo * e.Cantidad).ToString("F2")</label>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar </button>
+                <button type="button" class="btn btn-danger bi bi-trash" @onclick="() => MostrarModal = false"> Eliminar </button>
+                <a class="btn btn-secondary bi bi-arrow-left" href="/Entradas/Index"> Regresar </a>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
 @code {
     [Parameter]
     public int EntradaId { get; set; }
 
+    public Entradas Entrada { get; set; } = new ();
+
+    public EntradasDetalles DetalleSeleccionado { get; set; } = new EntradasDetalles();
+
+    public List<Productos> ListaProductos { get; set; } = new List<Productos>();
+
+    private bool MostrarModal { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Entrada = await entradasService.Buscar(EntradaId);
+        ListaProductos = await productosService.Listar(e => true);
+    }
+
+    public async Task GuardarEntrada()
+    {
+        if (await entradasService.Guardar(Entrada))
+        {
+            navigation.NavigateTo("/Entradas/Index");
+        }
+    }
+
+    public async Task EliminarEntrada()
+    {
+        if (await entradasService.Eliminar(EntradaId))
+        {
+            navigation.NavigateTo("/Entradas/Index");
+        }
+    }
+
+    public async Task AgregarDetalle((Productos producto, double cantidad, double costo) selection)
+    {
+        var detalle = new EntradasDetalles
+        {
+            ProductoId = selection.producto.ProductoId,
+            Cantidad = selection.cantidad,
+            Costo = selection.costo,
+        };
+
+        Entrada.EntradaDetalle.Add(detalle);
+
+        DetalleSeleccionado = new EntradasDetalles();
+        await Task.CompletedTask;
+    }
+
+    public void RemoverDetalle(EntradasDetalles detalle)
+    {
+        Entrada.EntradaDetalle.Remove(detalle);
+        DetalleSeleccionado = detalle;
+    }
 }
