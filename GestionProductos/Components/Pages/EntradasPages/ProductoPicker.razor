@@ -1,5 +1,68 @@
-﻿
+﻿<div class="row align-items-center">
+    <div class="col-12 col-md-4 mb-3">
+        <label class="col-form-label"> <strong> Seleccione un producto </strong></label>
+        <InputSelect class="form-select" @bind-value= "ProductoId"> 
+            <option value ="0"> Seleccione producto </option>
+
+            @foreach(var producto in ListaProductos)
+            {
+                <option value ="@producto.ProductoId"> @producto.ProductoId - @producto.Descripcion (Existencia: @producto.Existencia) </option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="col-12 col-md-4 mb-3">
+        <label class="col-form-label"> <strong> Cantidad </strong></label>
+        <InputNumber class="form-control" @bind-Value="Cantidad"/>
+    </div>
+
+    <div class="col-12 col-md-4 mb-3">
+        <label class="col-form-label"> <strong> Costo </strong></label>
+        <div class="input-group">
+            <InputNumber class="form-control" @bind-Value="Costo" readonly />
+            <button type="button" class="btn btn-success bi bi-plus" @onclick="TriggerSelection"/>
+        </div>
+    </div>
+</div>
+
+@if(!string.IsNullOrEmpty(MensajeError))
+{
+    <div class="alert alert-danger"> @MensajeError </div>
+}
 
 @code {
+    [Parameter]
+    public int ProductoId { get; set; }
 
+    [Parameter]
+    public double Cantidad { get; set; }
+
+    [Parameter]
+    public double Costo { get; set; }
+
+    [Parameter]
+    public List<Productos> ListaProductos { get; set; } = new List<Productos>();
+
+    [Parameter]
+    public EventCallback<(Productos producto, double cantidad, double costo)> OnComponenteSeleccionado { get; set; }
+
+    private string MensajeError { get; set; } = string.Empty;
+
+    public async Task TriggerSelection ()
+    {
+        if (ProductoId == 0)
+        {
+            MensajeError = "Por favor, seleccione un producto";
+            return;
+        }
+
+        if (Cantidad <= 0)
+        {
+            MensajeError = "La cantidad debe ser mayor que 0";
+            return;
+        }
+
+        var productoSeleccionado = ListaProductos.Single(p => p.ProductoId == ProductoId);
+        await OnComponenteSeleccionado.InvokeAsync((productoSeleccionado, Cantidad, Costo));
+    }
 }
