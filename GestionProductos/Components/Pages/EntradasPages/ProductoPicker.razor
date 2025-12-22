@@ -1,7 +1,7 @@
 ﻿<div class="row align-items-center">
     <div class="col-12 col-md-4 mb-3">
         <label class="col-form-label"> <strong> Seleccione un producto </strong></label>
-        <InputSelect class="form-select" @bind-value= "ProductoId"> 
+        <InputSelect class="form-select" @bind-value="ProductoId" @bind-value:after="OnProductoChanged">
             <option value ="0"> Seleccione producto </option>
 
             @foreach(var producto in ListaProductos)
@@ -47,6 +47,21 @@
     public EventCallback<(Productos producto, double cantidad, double costo)> OnComponenteSeleccionado { get; set; }
 
     private string MensajeError { get; set; } = string.Empty;
+
+    private void OnProductoChanged()
+    {
+        var producto = ListaProductos.FirstOrDefault(p => p.ProductoId == ProductoId);
+
+        if (producto != null)
+        {
+            Costo = producto.Costo;
+            MensajeError = string.Empty;
+        }
+        else
+        {
+            Costo = 0;
+        }
+    }
 
     public async Task TriggerSelection ()
     {
