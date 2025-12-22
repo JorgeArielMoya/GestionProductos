@@ -6,7 +6,7 @@
 
             @foreach(var producto in ListaProductos)
             {
-                <option value ="@producto.ProductoId"> @producto.Descripcion (Existencia: @producto.Existencia) </option>
+                <option value ="@producto.ProductoId"> @producto.Descripcion (Existencia: @producto.Existencia.ToString("F2")) </option>
             }
         </InputSelect>
     </div>
