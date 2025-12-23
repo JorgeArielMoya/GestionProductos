@@ -1,7 +1,8 @@
 ﻿@page "/Entradas/Index"
-@inject ProductosService productosService
 @inject EntradasService entradasService
 @rendermode InteractiveServer
+
+@attribute [Authorize]
 
 <PageTitle> Index Entradas </PageTitle>
 
