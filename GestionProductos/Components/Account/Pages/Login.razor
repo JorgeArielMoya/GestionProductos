@@ -93,7 +93,6 @@
         Input ??= new();
         editContext = new EditContext(Input);
 
-        // Verificar si el usuario ya está autenticado
         if (AuthenticationState is not null)
         {
             var authState = await AuthenticationState;
@@ -101,15 +100,13 @@
 
             if (user.Identity?.IsAuthenticated == true)
             {
-                // Redirigir directamente a Entradas/Index si ya está autenticado
-                NavigationManager.NavigateTo("/Entradas/Index", true);
+                NavigationManager.NavigateTo("/Home", true);
                 return;
             }
         }
 
         if (HttpMethods.IsGet(HttpContext.Request.Method))
         {
-            // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
         }
     }
@@ -135,7 +132,6 @@
                 return;
             }
 
-            // NUEVO: Buscar usuario por email primero
             var user = await UserManager.FindByEmailAsync(Input.Email);
             if (user == null)
             {
@@ -146,10 +142,8 @@
 
             Logger.LogInformation($"Usuario encontrado. UserName: {user.UserName}, Email: {user.Email}");
 
-            // Usar UserName para el login, no Email
             result = await SignInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
 
-            // Debug adicional
             if (!result.Succeeded)
             {
                 Logger.LogWarning($"Login fallido - Succeeded: {result.Succeeded}, IsLockedOut: {result.IsLockedOut}, IsNotAllowed: {result.IsNotAllowed}");
@@ -159,7 +153,7 @@
         if (result.Succeeded)
         {
             Logger.LogInformation("User logged in.");
-            RedirectManager.RedirectTo("/Entradas/Index");
+            RedirectManager.RedirectTo("/Home");
         }
         else if (result.RequiresTwoFactor)
         {
