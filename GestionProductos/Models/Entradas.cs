@@ -11,6 +11,8 @@ public class Entradas
     public DateTime Fecha { get; set; } = DateTime.Now;
 
     [Required(ErrorMessage = "El concepto es obligatorio")]
+    [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$",
+        ErrorMessage = "El concepto solo puede contener letras y espacios")]
     public string Concepto { get; set; } = null!;
     public double Total { get; set; }
     public ICollection<EntradasDetalles> EntradaDetalle { get; set; } = new List<EntradasDetalles>();       
