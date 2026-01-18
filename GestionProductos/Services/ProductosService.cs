@@ -28,7 +28,7 @@ public class ProductosService(IDbContextFactory<ApplicationDbContext> DbFactory)
     public async Task<bool> ExisteDescripcion (string descripcion)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
-        return await contexto.Productos.AnyAsync(p => p.Descripcion == descripcion);
+        return await contexto.Productos.AnyAsync(p => p.Descripcion.ToLower() == descripcion.ToLower());
     }
 
     private async Task<bool> Insertar (Productos producto)
