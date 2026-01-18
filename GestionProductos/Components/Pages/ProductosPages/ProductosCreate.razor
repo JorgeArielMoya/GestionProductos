@@ -55,6 +55,11 @@
                 </div>
             </div>
 
+            @if (!string.IsNullOrEmpty(MensajeError))
+            {
+                <div class="alert alert-danger"> @MensajeError </div>
+            }
+
             <div class="card-footer d-flex justify-content-center gap-2">
                 <button type="submit" class="btn btn-primary bi bi-floppy"> Guardar </button>
                 <a class="btn btn-secondary bi bi-arrow-left" href="/Productos/Index"> Regresar </a>
@@ -66,8 +71,16 @@
 @code {
     public Productos Producto { get; set; } = new Productos();
 
+    private string MensajeError { get; set; } = string.Empty;
+
     public async Task GuardarProducto ()
     {
+        if (await productosService.ExisteDescripcion(Producto.Descripcion))
+        {
+            MensajeError = "Este producto ya existe dentro del inventario";
+            return;
+        }
+
         if (await productosService.Guardar(Producto))
         {
             navigation.NavigateTo("/Productos/Index");
