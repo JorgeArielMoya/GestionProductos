@@ -40,6 +40,11 @@
                     </div>
                 </div>
 
+                @if (!string.IsNullOrEmpty(MensajeError))
+                {
+                    <div class="alert alert-danger"> @MensajeError </div>
+                }
+
                 <div class="border border-success p-3 mt-3">
                     <h5> Detalle del pedido </h5>
 
@@ -100,6 +105,8 @@
 
     public List<Productos> ListaProductos { get; set; } = new List<Productos>();
 
+    private string MensajeError { get; set; } = string.Empty;
+
     protected override async Task OnInitializedAsync ()
     {
         ListaProductos = await productosService.Listar(e => true);
@@ -107,6 +114,12 @@
 
     public async Task GuardarEntrada ()
     {
+        if (Entrada.EntradaDetalle.Count == 0)
+        {
+            MensajeError = "Debe agregar por lo menos un detalle";
+            return;
+        }
+
         if (await entradasService.Guardar(Entrada))
         {
             navigation.NavigateTo("/Entradas/Index");
