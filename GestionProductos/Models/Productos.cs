@@ -8,6 +8,8 @@ public class Productos
     public int ProductoId { get; set; }
 
     [Required(ErrorMessage = "La descripcion es obligatoria")]
+    [RegularExpression(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$",
+    ErrorMessage = "La descripción solo puede contener letras y espacios")]
     public string Descripcion { get; set; } = null!;
 
     [Range(0.01, double.MaxValue, ErrorMessage = "El costo debe ser mayor a 0")]
