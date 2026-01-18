@@ -35,6 +35,7 @@
                     <div class="input-group">
                         <input type="text" class="form-control" @bind="ValorFiltro" placeholder="Buscar"/>
                         <button type="button" class="btn btn-outline-info bi bi-search" @onclick="Buscar"> </button>
+                        <button type="button" class="btn btn-outline-secondary bi bi-arrow-clockwise" @onclick="Restablecer"> </button>
                     </div>
                 </div>
             </div>
@@ -125,5 +126,12 @@
         }
 
         ListaProductos = lista;
+    }
+
+    private async Task Restablecer()
+    {
+        ListaProductos = await productosService.Listar(e => true);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
     }
 }
