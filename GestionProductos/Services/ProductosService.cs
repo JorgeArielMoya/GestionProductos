@@ -25,6 +25,12 @@ public class ProductosService(IDbContextFactory<ApplicationDbContext> DbFactory)
         return await contexto.Productos.AnyAsync(p => p.ProductoId == productoId);      
     }
 
+    public async Task<bool> ExisteDescripcion (string descripcion)
+    {
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+        return await contexto.Productos.AnyAsync(p => p.Descripcion == descripcion);
+    }
+
     private async Task<bool> Insertar (Productos producto)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
